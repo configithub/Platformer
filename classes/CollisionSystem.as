@@ -24,7 +24,73 @@
 			}
 		}
 		
+		public function speculative_contact(node:CollisionNode) {
+			var step_x:int = 0;
+			if(node.motion.speed_x > 0)
+			  step_x = 1;
+			else if (node.motion.speed_x < 0) 
+			  step_x = -1;
+			var step_y:int = 0;
+			if(node.motion.speed_y > 0)
+			  step_y = 1;
+			else if (node.motion.speed_y < 0) 
+			  step_y = -1;
+			
+			var speculative_x:int = node.position.x;
+			var speculative_y:int = node.position.y;
+			
+			var dist_x:int = node.motion.speed_x;
+			var dist_y:int = node.motion.speed_y;
+			
+			while(true) {
+				speculative_x += step_x;
+				if(!valid_map_position(speculative_x, speculative_y, node)) {
+					node.motion.speed_x = 0;
+					speculative_x -= step_x;
+					step_x = 0;
+				}else{
+					dist_x -= step_x;
+				}
+				speculative_y += step_y;
+				if(!valid_map_position(speculative_x, speculative_y, node)) {
+					if(node.motion.speed_y > 0) { node.motion.can_jump = true; }
+					node.motion.speed_y = 0;
+					speculative_y -= step_y;
+					step_y = 0;
+				}else{
+					dist_y -= step_y;
+				}
+				if(dist_x == 0) { step_x = 0; }
+				if(dist_y == 0) { step_y = 0; }
+				if(step_x ==0 && step_y == 0) { break; }
+			}
+			node.position.x = speculative_x;
+			node.position.y = speculative_y;
+		}
+		
+		public function valid_map_position(x:int, y:int, node:CollisionNode):Boolean {
+			var tile_top_left_X:int = game.get_tile_x( x - node.aabb.width / 2);
+			var tile_top_left_Y:int = game.get_tile_y( y - node.aabb.height / 2);
+			
+			var tile_bottom_right_X:int = game.get_tile_x(x+node.aabb.width /2);
+			var tile_bottom_right_Y:int = game.get_tile_y(y+node.aabb.height /2);
+			
+			for(var i:int = tile_top_left_X; i <= tile_bottom_right_X; i++) {
+				for(var j:int = tile_top_left_Y; j <= tile_bottom_right_Y; j++) {
+					if(game.map[ i + j * game.map_width ] == 1) { return false; }
+				}
+			}
+			return true;
+		}
+		
 		public function loop() {
+			// resolve collision with the map and move entities
+			for each(var node:CollisionNode in nodes) {
+				if(node.flag.collision_mode = game.SPECULATIVE_CONTACT) {
+				  speculative_contact(node);
+				}
+			}
+			
 			collision_queue = new Array(); // empty the queue
 			// check if something collides and fill the collision queue
 			for(var i:int = 0; i < nodes.length-1; i++) {
@@ -42,27 +108,7 @@
 			
 			// resolve collisions
 			for each(var collision:Collision in collision_queue) {
-				if(collision.a.flag.value == 1 && collision.b.flag.value == 2) { // a is a tile, b is a player
-					// player lands on tile
-					var tile_up:int = collision.a.position.y - collision.a.aabb.height / 2;
-					var tile_down:int = collision.a.position.y + collision.a.aabb.height / 2;
-					var tile_left:int = collision.a.position.x - collision.a.aabb.width / 2;
-					var tile_right:int = collision.a.position.x + collision.a.aabb.width / 2;
-					
-					var player_up:int = collision.b.position.y - collision.b.aabb.height / 2;
-					var player_down:int = collision.b.position.y + collision.b.aabb.height / 2;
-					var player_left:int = collision.b.position.x - collision.b.aabb.width / 2;
-					var player_right:int = collision.b.position.x + collision.b.aabb.width / 2;
-					
-					if(player_down > tile_up && collision.b.motion.speed_y >0) { 
-						collision.b.position.y = collision.a.position.y - collision.a.aabb.height / 2 - collision.b.aabb.height / 2;
-						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0; collision.b.motion.can_jump = true;
-					}else if(player_up < tile_down && collision.b.motion.speed_y <0) {
-						collision.b.position.y = collision.a.position.y + collision.b.aabb.height /2 + collision.a.aabb.height/2;
-						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0;
-					}
-					
-				}
+				
 			}
 		}
 		

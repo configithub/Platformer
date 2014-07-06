@@ -17,6 +17,14 @@
 		const JUMPING_LEFT:int = 3;
 		const JUMPRING_RIGHT:int = 4;
 		
+		// supported collision modes (in flag component)
+		const NO_COLLISION:int = 0;
+		const SPECULATIVE_CONTACT:int = 1;
+		
+		// entity types (in flag component)
+		const TILE:int = 1;
+		const PLAYER:int = 2;
+		
 		var map_width:int;
 		var map_height:int;
 		var map:Array;
@@ -114,21 +122,29 @@
 			player_animation.add_animation_state( LEFT, "left_player_animation" );
 			player_animation.add_animation_state( RIGHT, "right_player_animation" );
 			player.add_animation(player_animation);
-			player.add_flag(new Flag(this, 2));
+			player.add_flag(new Flag(this, PLAYER, SPECULATIVE_CONTACT));
 			render_system.add(player); // entity will be rendered
 			move_system.add(player); // entity can move
 			collision_system.add(player); // entity can collide
 			motion_control_system.add(player);
 		}
 		
+		public function get_tile_x(x:int):int {
+			return x / tile_width;
+		}
+		
+		public function get_tile_y(y:int):int {
+			return y / tile_height;
+		}
+		
 		public function create_tile( x:int, y:int ):Entity {
 			var tile:Entity = new Entity(this);
 			tile.add_position(new Position(this, x, y));
 			tile.add_displayable(new Displayable(this, new Tile()));
-			tile.add_aabb_mask(new AABBMask(this, tile_width, tile_height));
-			tile.add_flag(new Flag(this, 1));
+			//tile.add_aabb_mask(new AABBMask(this, tile_width, tile_height));
+			tile.add_flag(new Flag(this, TILE, NO_COLLISION));
 			render_system.add(tile);
-			collision_system.add(tile);
+			//collision_system.add(tile);
 			return tile;
 		}
 		
