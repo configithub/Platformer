@@ -45,6 +45,11 @@
 			components["F"] = component;
 		}
 		
+		public function add_animation(component:Animation) {
+			component.set_parent(this);
+			components["N"] = component;
+		}
+		
 		
 	}
 }

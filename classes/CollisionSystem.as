@@ -29,6 +29,7 @@
 			// check if something collides and fill the collision queue
 			for(var i:int = 0; i < nodes.length-1; i++) {
 				for(var j:int = i+1; j < nodes.length; j++) {
+					if(nodes[i].flag.value == nodes[j].flag.value) { continue; } // dirty fix to prevent intertile collisions
 					if(is_colliding(nodes[i], nodes[j])) {
 					  if(nodes[i].flag.value < nodes[j].flag.value) {
 					    collision_queue.push(new Collision(nodes[i], nodes[j]));   
@@ -45,7 +46,7 @@
 					// a is a tile, b is a player
 					if(collision.a.position.y - collision.a.aabb.height / 2 < collision.b.position.y + collision.b.aabb.height / 2) {
 						collision.b.position.y = collision.a.position.y - collision.a.aabb.height / 2 - collision.b.aabb.height / 2;
-						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0;
+						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0; collision.b.motion.can_jump = true;
 					}
 				}
 			}

@@ -4,10 +4,12 @@
 		
 		var position:Position;
 		var motion:Motion;
+		var flag:Flag;
 		
-		public function MoveNode(aPosition:Position, aMotion:Motion) {
+		public function MoveNode(aPosition:Position, aMotion:Motion, aFlag:Flag) {
 			position = aPosition;
 			motion = aMotion;
+			flag = aFlag;
 		}
 		
 	}
