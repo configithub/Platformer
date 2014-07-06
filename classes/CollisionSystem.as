@@ -42,12 +42,26 @@
 			
 			// resolve collisions
 			for each(var collision:Collision in collision_queue) {
-				if(collision.a.flag.value == 1 && collision.b.flag.value == 2) {
-					// a is a tile, b is a player
-					if(collision.a.position.y - collision.a.aabb.height / 2 < collision.b.position.y + collision.b.aabb.height / 2) {
+				if(collision.a.flag.value == 1 && collision.b.flag.value == 2) { // a is a tile, b is a player
+					// player lands on tile
+					var tile_up:int = collision.a.position.y - collision.a.aabb.height / 2;
+					var tile_down:int = collision.a.position.y + collision.a.aabb.height / 2;
+					var tile_left:int = collision.a.position.x - collision.a.aabb.width / 2;
+					var tile_right:int = collision.a.position.x + collision.a.aabb.width / 2;
+					
+					var player_up:int = collision.b.position.y - collision.b.aabb.height / 2;
+					var player_down:int = collision.b.position.y + collision.b.aabb.height / 2;
+					var player_left:int = collision.b.position.x - collision.b.aabb.width / 2;
+					var player_right:int = collision.b.position.x + collision.b.aabb.width / 2;
+					
+					if(player_down > tile_up && collision.b.motion.speed_y >0) { 
 						collision.b.position.y = collision.a.position.y - collision.a.aabb.height / 2 - collision.b.aabb.height / 2;
 						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0; collision.b.motion.can_jump = true;
+					}else if(player_up < tile_down && collision.b.motion.speed_y <0) {
+						collision.b.position.y = collision.a.position.y + collision.b.aabb.height /2 + collision.a.aabb.height/2;
+						collision.b.motion.accel_y = 0; collision.b.motion.speed_y = 0;
 					}
+					
 				}
 			}
 		}
