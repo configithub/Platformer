@@ -108,7 +108,7 @@
 			player.add_position(new Position(this, 550, 120));
 			player.add_displayable(new Displayable(this, new Player()));
 			player.add_motion(new Motion(this, 0, 0, 0, 0, true, true, 10));
-			player.add_aabb_mask(new AABBMask(this, 50, 80));
+			player.add_aabb_mask(new AABBMask(this, 50, 160));
 			var player_animation:Animation = new Animation(this);
 			player_animation.add_animation_state( IDLE, "idle_player_animation" );
 			player_animation.add_animation_state( LEFT, "left_player_animation" );
