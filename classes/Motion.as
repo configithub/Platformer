@@ -14,6 +14,7 @@
 		var apply_horizontal_friction:Boolean;
 		var max_speed:int; // used to cap speed
 		var can_jump:Boolean;
+		var can_fire:Boolean;
 		
 		public function Motion(aGame:PlatformerGame, aSpeedX:int, aSpeedY:int, aAccelX:int, aAccelY:int, aGravity:Boolean, aFriction:Boolean, aMaxSpeed:int) {
 			accel_x = aAccelX;
@@ -25,6 +26,7 @@
 			apply_horizontal_friction = aFriction;
 			max_speed = aMaxSpeed;
 			can_jump = false;
+			can_fire = true;
 		}
 		
 	}

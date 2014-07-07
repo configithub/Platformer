@@ -26,6 +26,7 @@
 		const TILE:int = 1;
 		const PLAYER:int = 2;
 		const ONEWAY:int = 3;
+		const BULLET:int = 4;
 		
 		var map_width:int;
 		var map_height:int;
@@ -47,6 +48,7 @@
 		var up_pushed:Boolean;
 		var down_pushed:Boolean;
 		var space_pushed:Boolean;
+		var space_released:Boolean;
 		
 		var game_timer:Timer;
 		
@@ -71,11 +73,7 @@
 		}
 		
 		public function reset_inputs() {
-			left_pushed = false;
-			right_pushed = false;
-			up_pushed = false;
-			down_pushed = false;
-			space_pushed = false;
+			space_released = false;
 		}
 		
 		public function report_key_down(event:KeyboardEvent) { 
@@ -103,6 +101,7 @@
 				up_pushed = false;
 			}else if(event.keyCode == 32) {
 				space_pushed = false;
+				space_released = true;
 			}
 		}
 		
@@ -128,7 +127,7 @@
 			render_system.add(player); // entity will be rendered
 			move_system.add(player); // entity can move
 			collision_system.add(player); // entity can collide
-			motion_control_system.add(player);
+			motion_control_system.add(player); // entity can be controlled (via keyboard input in this case)
 		}
 		
 		public function get_tile_x(x:int):int {
@@ -143,10 +142,8 @@
 			var tile:Entity = new Entity(this);
 			tile.add_position(new Position(this, x, y));
 			tile.add_displayable(new Displayable(this, new Tile()));
-			//tile.add_aabb_mask(new AABBMask(this, tile_width, tile_height));
 			tile.add_flag(new Flag(this, TILE, NO_COLLISION));
 			render_system.add(tile);
-			//collision_system.add(tile);
 			return tile;
 		}
 		
@@ -157,6 +154,27 @@
 			tile.add_flag(new Flag(this, ONEWAY, NO_COLLISION));
 			render_system.add(tile);
 			return tile;
+		}
+		
+		public function player_fires() {
+			var bullet:Entity = new Entity(this);
+			var bullet_exit_offset_x:int;
+			var bullet_exit_offset_y:int;
+			var bullet_speed:int;
+			if(player.components["N"].is_facing_left == true) {
+				bullet_exit_offset_x = -25;
+				bullet_speed = -30;
+			}else{
+				bullet_exit_offset_x = 25;
+				bullet_speed = 30;
+			}
+			bullet_exit_offset_y = -10;
+			bullet.add_position( new Position(this, player.components["P"].x + bullet_exit_offset_x, player.components["P"].y + bullet_exit_offset_y));
+			bullet.add_displayable(new Displayable(this, new Bullet()));
+			bullet.add_motion(new Motion(this, bullet_speed, 0, 0, 0, false, false, Math.abs(bullet_speed)));
+			bullet.add_flag(new Flag(this, BULLET, NO_COLLISION));
+			render_system.add(bullet);
+			move_system.add(bullet); 
 		}
 		
 		public function init_map() {
@@ -193,6 +211,7 @@
 			move_system.loop();
 			collision_system.loop();
 			render_system.loop();
+			reset_inputs();
 		}
 		
 		public function draw_map() {

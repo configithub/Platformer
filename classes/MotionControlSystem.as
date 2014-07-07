@@ -29,6 +29,9 @@
 				node.motion.can_jump = false;
 				node.motion.accel_y = -10;
 			}
+			if (game.space_released && node.motion.can_fire) { 
+			  game.player_fires();
+			}
 		}
 
 		public function add(entity:Entity) {

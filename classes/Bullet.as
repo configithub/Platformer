@@ -2,9 +2,9 @@
 	
 	import flash.display.MovieClip;
 	
-	public class OneWay extends MovieClip {
+	public class Bullet extends MovieClip {
 		
-		public function OneWay() {
+		public function Bullet() {
 			// constructor 
 		}
 	}

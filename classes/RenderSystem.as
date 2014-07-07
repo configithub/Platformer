@@ -23,11 +23,13 @@
 			if(node.animation.animation_states[game.LEFT] != null) {
 				if( node.motion.speed_x < 0 && node.motion.speed_y ==0 ) {
 					node.animation.current_state = game.LEFT;
+					node.animation.is_facing_left = true;
 				}
 			}
 			if(node.animation.animation_states[game.RIGHT] != null) {
 				if( node.motion.speed_x > 0 && node.motion.speed_y ==0 ) {
 					node.animation.current_state = game.RIGHT;
+					node.animation.is_facing_left = false;
 				}
 			}
 			if(node.animation.animation_states[game.IDLE] != null) {
@@ -44,12 +46,9 @@
 				if(node.animation != null) { 
 				  find_animation_state(node);
 				  if(node.display.display_object.currentLabel != node.animation.get_current_value()) {
-					 //trace("animation switch " + node.display.display_object.currentLabel + " / " + node.animation.get_current_value() );
-					//node.display.display_object.stop();
 					node.display.display_object.stop();
 				    node.display.display_object.gotoAndPlay(node.animation.get_current_value());
 				  }
-				  trace(node.display.display_object.currentFrame);
 				} 
 				
 				node.display.display_object.x = node.position.x;
