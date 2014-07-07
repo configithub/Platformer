@@ -77,7 +77,9 @@
 			
 			for(var i:int = tile_top_left_X; i <= tile_bottom_right_X; i++) {
 				for(var j:int = tile_top_left_Y; j <= tile_bottom_right_Y; j++) {
-					if(game.map[ i + j * game.map_width ] == 1) { return false; }
+					if(game.map[ i + j * game.map_width ] == game.TILE ||
+					   (game.map[ i + j * game.map_width ] == game.ONEWAY 
+						&& node.position.y+node.aabb.height /2 < j * game.tile_height)) { return false; }
 				}
 			}
 			return true;
@@ -86,7 +88,7 @@
 		public function loop() {
 			// resolve collision with the map and move entities
 			for each(var node:CollisionNode in nodes) {
-				if(node.flag.collision_mode = game.SPECULATIVE_CONTACT) {
+				if(node.flag.collision_mode == game.SPECULATIVE_CONTACT) {
 				  speculative_contact(node);
 				}
 			}

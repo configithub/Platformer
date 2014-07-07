@@ -22,8 +22,10 @@
 		const SPECULATIVE_CONTACT:int = 1;
 		
 		// entity types (in flag component)
+		// 0 : void tile;
 		const TILE:int = 1;
 		const PLAYER:int = 2;
+		const ONEWAY:int = 3;
 		
 		var map_width:int;
 		var map_height:int;
@@ -148,6 +150,15 @@
 			return tile;
 		}
 		
+		public function create_oneway_tile( x:int, y:int):Entity {
+			var tile:Entity = new Entity(this);
+			tile.add_position(new Position(this, x,y));
+			tile.add_displayable(new Displayable(this, new OneWay()));
+			tile.add_flag(new Flag(this, ONEWAY, NO_COLLISION));
+			render_system.add(tile);
+			return tile;
+		}
+		
 		public function init_map() {
 	      tile_width = 32;
 		  tile_height = 32;
@@ -160,11 +171,11 @@
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						   0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 3, 3, 3, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+						   0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
@@ -188,8 +199,10 @@
 			var x:int = 0;
 			var y:int = 0;
 			for each (var i in map) {
-				if( i == 1 ) {
+				if( i == TILE ) {
 					create_tile( x * tile_width + tile_width / 2,  y * tile_height + tile_height / 2 );
+				}else if( i == ONEWAY ) {
+					create_oneway_tile( x * tile_width + tile_width / 2,  y * tile_height + tile_height / 2 );
 				}
 				x += 1;
 				if( x >= map_width) { 
