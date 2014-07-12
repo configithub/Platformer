@@ -14,6 +14,7 @@
 		*   N : Animation
 		*   F : Flag
 		*   W : Weapon
+		*   C : Cruise
 		*/
 		var game:PlatformerGame;
 		
@@ -55,6 +56,11 @@
 		public function add_weapon(component:Weapon) {
 			component.set_parent(this);
 			components["W"] = component;
+		}
+		
+		public function add_cruise(component:Cruise) {
+			component.set_parent(this);
+			components["C"] = component;
 		}
 		
 		

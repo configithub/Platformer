@@ -29,7 +29,8 @@
 				else if(node.motion.speed_x < -1 * node.motion.max_speed) { node.motion.speed_x = -1 * node.motion.max_speed; }
 				if(node.motion.speed_y > node.motion.max_speed) { node.motion.speed_y = node.motion.max_speed; }
 				else if(node.motion.speed_y < -1 * node.motion.max_speed) { node.motion.speed_y = -1 * node.motion.max_speed; }
-				if(node.flag.collision_mode == game.NO_COLLISION) {
+				if(node.flag.collision_mode == game.NO_COLLISION ||
+				   node.flag.collision_mode == game.PLATFORM_COLLISION) {
 				  // update position
 				  node.position.x += node.motion.speed_x;
 				  node.position.y += node.motion.speed_y;

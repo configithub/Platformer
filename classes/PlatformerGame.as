@@ -20,6 +20,7 @@
 		// supported collision modes (in flag component)
 		const NO_COLLISION:int = 0;
 		const SPECULATIVE_CONTACT:int = 1;
+		const PLATFORM_COLLISION:int = 2;
 		
 		// entity types (in flag component)
 		// 0 : void tile;
@@ -27,6 +28,12 @@
 		const PLAYER:int = 2;
 		const ONEWAY:int = 3;
 		const BULLET:int = 4;
+		const MOVING_PLATFORM:int = 5;
+		
+		// cuise modes (used in motion control system)
+		const OSCILLATION:int = 0;
+		const ROTATION:int = 1;
+		const ONE_WAY_TRIP = 2;
 		
 		var map_width:int;
 		var map_height:int;
@@ -65,6 +72,7 @@
 		  draw_map();
 		  init_input_collection();
 		  init_player();
+		  create_moving_platform(500, 50, 500, 250);
 		}
 		
 		public function init_input_collection() { 
@@ -129,7 +137,25 @@
 			collision_system.add(player); // entity can collide
 			motion_control_system.add(player); // entity can be controlled (via keyboard input in this case)
 		}
-		
+
+		public function create_moving_platform(x1:int, y1:int, x2:int, y2:int) {
+			var platform:Entity = new Entity(this);
+			platform.add_position(new Position(this, x1, y1));
+			platform.add_displayable(new Displayable(this, new MovingPlatform()));
+			platform.add_motion(new Motion(this, 0, 0, 0, 0, false, false, 10));
+			platform.add_aabb_mask(new AABBMask(this, 70, 10));
+			platform.add_flag(new Flag(this, MOVING_PLATFORM, PLATFORM_COLLISION));
+			var cruise:Cruise = new Cruise(this);
+			cruise.cruise_mode = OSCILLATION;
+			cruise.add_position(x1,y1);
+			cruise.add_position(x2,y2);
+			platform.add_cruise(cruise);
+			render_system.add(platform);
+			move_system.add(platform);
+			collision_system.add(platform);
+			motion_control_system.add(platform);
+		}
+
 		public function get_tile_x(x:int):int {
 			return x / tile_width;
 		}
