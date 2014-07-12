@@ -72,7 +72,7 @@
 		  draw_map();
 		  init_input_collection();
 		  init_player();
-		  create_moving_platform(500, 50, 500, 300);
+		  create_moving_platform(350, 50, 500, 300);
 		}
 		
 		public function init_input_collection() { 
