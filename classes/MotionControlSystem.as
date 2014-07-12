@@ -4,14 +4,23 @@
 
 		var game:PlatformerGame;
 		var nodes:Array;
+		var nodes2:Array;
 
 		public function MotionControlSystem(aGame:PlatformerGame) {
 			game = aGame;
 			nodes = new Array();
+			nodes2 = new Array();
 		}
 
 		public function loop() {
 			for each (var node:MotionControlNode in nodes) {
+				if (node.cruise == null) {// not a cruising entity, for now it means that it answer to keyboard inputs
+                    keyboard_control(node);
+				}else{
+					cruise_control(node);
+				}
+			}
+			for each (var node:MotionControlNode in nodes2) {
 				if (node.cruise == null) {// not a cruising entity, for now it means that it answer to keyboard inputs
                     keyboard_control(node);
 				}else{
@@ -54,7 +63,11 @@
 
 		public function add(entity:Entity) {
 			var new_node:MotionControlNode = new MotionControlNode(entity.components["P"],entity.components["M"],entity.components["C"],entity.components["F"]);
-			nodes.push(new_node);
+			if(new_node.motion.motion_priority == 1) {
+				nodes.push(new_node);
+			}else{
+				nodes2.push(new_node);
+			}
 		}
 
 

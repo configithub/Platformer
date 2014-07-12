@@ -24,7 +24,18 @@
 			}
 		}
 		
+		public function standing_on(node:CollisionNode) {
+			if(node.motion.stand_on != null) {
+				node.position.x += node.motion.stand_on.motion.speed_x;
+				node.position.y += node.motion.stand_on.motion.speed_y;
+				node.motion.can_jump = true;
+			}else{
+				node.motion.can_jump = false;
+			}
+		}
+		
 		public function speculative_contact(node:CollisionNode) {
+			standing_on(node); // adjust player entity position if it stands on something else
 			var step_x:int = 0;
 			if(node.motion.speed_x > 0)
 			  step_x = 1;
@@ -90,6 +101,7 @@
 			for each(var node:CollisionNode in nodes) {
 				if(node.flag.collision_mode == game.SPECULATIVE_CONTACT) {
 				  speculative_contact(node);
+				  node.motion.stand_on = null; // reinitialize standings
 				}
 			}
 			
@@ -110,7 +122,15 @@
 			
 			// resolve collisions
 			for each(var collision:Collision in collision_queue) {
-				
+				if(collision.a.flag.value == game.PLAYER && collision.b.flag.value == game.MOVING_PLATFORM) {
+					// moving platform(b) - player(a) collision
+					if(collision.a.position.y+collision.a.aabb.height /2 - collision.a.motion.speed_y 
+					   < collision.b.position.y - collision.b.aabb.height / 2 - collision.b.motion.speed_y) { // during last frame, player was above platform
+						collision.a.position.y = collision.b.position.y - collision.b.aabb.height / 2 - collision.a.aabb.height /2
+								- collision.a.motion.speed_y; // adjust player position to avoid interpenetration
+						collision.a.motion.stand_on = collision.b; // player now stands on platform
+					}
+				}
 			}
 		}
 		

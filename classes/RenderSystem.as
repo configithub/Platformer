@@ -16,29 +16,32 @@
 			nodes = new Array();
 		}
 		
+		public function is_standing(node:RenderNode) { 
+			if(node.motion.stand_on == null && node.motion.speed_y == 0
+			 || node.motion.stand_on != null) {
+				 return true;
+			}
+			return false;
+		}
+		
 		public function find_animation_state(node:RenderNode) {
-			//node.animation.current_state = game.IDLE;
-			//trace( "speed_x : " + node.motion.speed_x + ", speed_y : " + node.motion.speed_y);
-			//trace(node.motion.speed_x > 0 && node.motion.speed_y ==0 );
 			if(node.animation.animation_states[game.LEFT] != null) {
-				if( node.motion.speed_x < 0 && node.motion.speed_y ==0 ) {
+				if( node.motion.speed_x < 0 && is_standing(node) ) {
 					node.animation.current_state = game.LEFT;
 					node.animation.is_facing_left = true;
 				}
 			}
 			if(node.animation.animation_states[game.RIGHT] != null) {
-				if( node.motion.speed_x > 0 && node.motion.speed_y ==0 ) {
+				if( node.motion.speed_x > 0 && is_standing(node) ) {
 					node.animation.current_state = game.RIGHT;
 					node.animation.is_facing_left = false;
 				}
 			}
 			if(node.animation.animation_states[game.IDLE] != null) {
-				if( node.motion.speed_x == 0 && node.motion.speed_y == 0 ) {
+				if( node.motion.speed_x == 0 && is_standing(node) ) {
 					node.animation.current_state = game.IDLE;
 				}
 			}
-			//node.animation.current_state = game.RIGHT;
-			
 		}
 		
 		public function loop() {

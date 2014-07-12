@@ -72,7 +72,7 @@
 		  draw_map();
 		  init_input_collection();
 		  init_player();
-		  create_moving_platform(500, 50, 500, 250);
+		  create_moving_platform(500, 50, 500, 300);
 		}
 		
 		public function init_input_collection() { 
@@ -122,7 +122,7 @@
 		
 		public function init_player() {
 			player = new Entity(this);
-			player.add_position(new Position(this, 550, 120));
+			player.add_position(new Position(this, 100, 120));
 			player.add_displayable(new Displayable(this, new Player()));
 			player.add_motion(new Motion(this, 0, 0, 0, 0, true, true, 10));
 			player.add_aabb_mask(new AABBMask(this, 50, 160));
@@ -142,8 +142,10 @@
 			var platform:Entity = new Entity(this);
 			platform.add_position(new Position(this, x1, y1));
 			platform.add_displayable(new Displayable(this, new MovingPlatform()));
-			platform.add_motion(new Motion(this, 0, 0, 0, 0, false, false, 10));
-			platform.add_aabb_mask(new AABBMask(this, 70, 10));
+			var motion:Motion = new Motion(this, 0, 0, 0, 0, false, false, 10);
+			motion.motion_priority = 1; // step platforms first
+			platform.add_motion(motion);
+			platform.add_aabb_mask(new AABBMask(this, 200, 10));
 			platform.add_flag(new Flag(this, MOVING_PLATFORM, PLATFORM_COLLISION));
 			var cruise:Cruise = new Cruise(this);
 			cruise.cruise_mode = OSCILLATION;
