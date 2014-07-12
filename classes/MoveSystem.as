@@ -29,8 +29,9 @@
 				else if(node.motion.speed_x < -1 * node.motion.max_speed) { node.motion.speed_x = -1 * node.motion.max_speed; }
 				if(node.motion.speed_y > node.motion.max_speed) { node.motion.speed_y = node.motion.max_speed; }
 				else if(node.motion.speed_y < -1 * node.motion.max_speed) { node.motion.speed_y = -1 * node.motion.max_speed; }
-				if(node.flag.collision_mode == game.NO_COLLISION ||
-				   node.flag.collision_mode == game.PLATFORM_COLLISION) {
+				// realize motion for entities that do not use speculative contact
+				if(node.flag.collision_mode == game.NO_COLLISION || // entities that collide with the map are treated in collision system
+				   node.flag.collision_mode == game.PLATFORM_COLLISION) { 
 				  // update position
 				  node.position.x += node.motion.speed_x;
 				  node.position.y += node.motion.speed_y;
@@ -38,8 +39,6 @@
 			}
 		}
 		
-		
-			
 		
 		public function add(entity:Entity) {
 			var new_node:MoveNode = new MoveNode(entity.components["P"], entity.components["M"], entity.components["F"]) ;

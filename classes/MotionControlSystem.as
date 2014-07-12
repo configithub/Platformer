@@ -3,8 +3,8 @@
 	public class MotionControlSystem {
 
 		var game:PlatformerGame;
-		var nodes:Array;
-		var nodes2:Array;
+		var nodes:Array; // things that needs to be moved first (i.e. moving platforms)
+		var nodes2:Array; // things that will be moved later on
 
 		public function MotionControlSystem(aGame:PlatformerGame) {
 			game = aGame;

@@ -16,7 +16,7 @@
 			nodes = new Array();
 		}
 		
-		public function is_standing(node:RenderNode) { 
+		public function is_standing(node:RenderNode) { // check if entity is standing on something (map or other entity)
 			if(node.motion.stand_on == null && node.motion.speed_y == 0
 			 || node.motion.stand_on != null) {
 				 return true;
@@ -48,12 +48,13 @@
 			for each(var node:RenderNode in nodes) {
 				if(node.animation != null) { 
 				  find_animation_state(node);
+				  // apply animation state
 				  if(node.display.display_object.currentLabel != node.animation.get_current_value()) {
 					node.display.display_object.stop();
 				    node.display.display_object.gotoAndPlay(node.animation.get_current_value());
 				  }
 				} 
-				
+				// render entity
 				node.display.display_object.x = node.position.x;
 				node.display.display_object.y = node.position.y;
 			}

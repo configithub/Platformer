@@ -25,17 +25,22 @@
 		}
 		
 		public function standing_on(node:CollisionNode) {
-			if(node.motion.stand_on != null) {
+			if(node.motion.stand_on != null) { // entity is standing on another entity
 				node.position.x += node.motion.stand_on.motion.speed_x;
 				node.position.y += node.motion.stand_on.motion.speed_y;
-				node.motion.can_jump = true;
+				node.motion.can_jump = true; 
 			}else{
-				node.motion.can_jump = false;
+				node.motion.can_jump = false; // later on we will check against the map if the entity can jump, for now we assume it can't
 			}
 		}
 		
 		public function speculative_contact(node:CollisionNode) {
 			standing_on(node); // adjust player entity position if it stands on something else
+			
+			// check all position between current position and destination position step by step
+			// if one of the position is not valid, stop there and realize the motion to this position
+			// else go to the destination position
+			// could be optimized with normal vectors
 			var step_x:int = 0;
 			if(node.motion.speed_x > 0)
 			  step_x = 1;
@@ -64,7 +69,7 @@
 				}
 				speculative_y += step_y;
 				if(!valid_map_position(speculative_x, speculative_y, node)) {
-					if(node.motion.speed_y > 0) { node.motion.can_jump = true; }
+					if(node.motion.speed_y > 0) { node.motion.can_jump = true; } // falling collision, entity can now jump
 					node.motion.speed_y = 0;
 					speculative_y -= step_y;
 					step_y = 0;
@@ -79,6 +84,7 @@
 			node.position.y = speculative_y;
 		}
 		
+		// check if entity collides with the map
 		public function valid_map_position(x:int, y:int, node:CollisionNode):Boolean {
 			var tile_top_left_X:int = game.get_tile_x( x - node.aabb.width / 2);
 			var tile_top_left_Y:int = game.get_tile_y( y - node.aabb.height / 2);
@@ -101,7 +107,7 @@
 			for each(var node:CollisionNode in nodes) {
 				if(node.flag.collision_mode == game.SPECULATIVE_CONTACT) {
 				  speculative_contact(node);
-				  node.motion.stand_on = null; // reinitialize standings
+				  node.motion.stand_on = null; // reinitialize standings for now
 				}
 			}
 			
