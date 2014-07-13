@@ -128,7 +128,9 @@
 			
 			// resolve collisions
 			for each(var collision:Collision in collision_queue) {
-				if(collision.a.flag.value == game.PLAYER && collision.b.flag.value == game.MOVING_PLATFORM) {
+				if((collision.a.flag.value == game.PLAYER 
+					|| collision.a.flag.value == game.ENEMY) 
+					&& collision.b.flag.value == game.MOVING_PLATFORM) {
 					// moving platform(b) - player(a) collision
 					if(collision.a.position.y+collision.a.aabb.height /2 - collision.a.motion.speed_y 
 					   < collision.b.position.y - collision.b.aabb.height / 2 - collision.b.motion.speed_y) { // during last frame, player was above platform

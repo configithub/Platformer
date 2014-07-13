@@ -28,7 +28,7 @@
 		const PLAYER:int = 2;
 		const ONEWAY:int = 3;
 		const BULLET:int = 4;
-		const MOVING_PLATFORM:int = 5;
+		const MOVING_PLATFORM:int = 99;
 		const ENEMY:int = 6;
 		
 		// cuise modes (used in motion control system)
@@ -140,7 +140,7 @@
 		}
 		
 		public function randomly_spawn_enemies(e:TimerEvent) {
-			var x:int = Math.random() * stage.width;
+			var x:int = (Math.random() * 480) ;
 			trace("spawn x " + x);
 			create_enemy(x);
 		}
