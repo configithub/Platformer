@@ -29,6 +29,7 @@
 		const ONEWAY:int = 3;
 		const BULLET:int = 4;
 		const MOVING_PLATFORM:int = 5;
+		const ENEMY:int = 6;
 		
 		// cuise modes (used in motion control system)
 		const OSCILLATION:int = 0;
@@ -137,6 +138,30 @@
 			collision_system.add(player); // entity can collide
 			motion_control_system.add(player); // entity can be controlled (via keyboard input in this case)
 		}
+		
+		public function randomly_spawn_enemies(e:TimerEvent) {
+			var x:int = Math.random() * stage.width;
+			trace("spawn x " + x);
+			create_enemy(x);
+		}
+		
+		public function create_enemy(x:int) {
+			var enemy:Entity = new Entity(this);
+			enemy.add_position(new Position(this, x, -200));
+			enemy.add_displayable(new Displayable(this, new Enemy()));
+			enemy.add_motion(new Motion(this, 0, 0, 0, 0, true, true, 10));
+			enemy.add_aabb_mask(new AABBMask(this, 50, 160));
+			var enemy_animation:Animation = new Animation(this);
+			enemy_animation.add_animation_state( IDLE, "idle_enemy_animation" );
+			enemy_animation.add_animation_state( LEFT, "left_enemy_animation" );
+			enemy_animation.add_animation_state( RIGHT, "right_enemy_animation" );
+			enemy.add_animation(enemy_animation);
+			enemy.add_flag(new Flag(this, ENEMY, SPECULATIVE_CONTACT));
+			render_system.add(enemy); // entity will be rendered
+			move_system.add(enemy); // entity can move
+			collision_system.add(enemy); // entity can collide
+			motion_control_system.add(enemy); // entity can be controlled (via keyboard input in this case)
+		}
 
 		public function create_moving_platform(x1:int, y1:int, x2:int, y2:int) {
 			var platform:Entity = new Entity(this);
@@ -232,6 +257,10 @@
 			game_timer = new Timer(25);
 			game_timer.addEventListener( TimerEvent.TIMER, loop );
 			game_timer.start();
+			
+			var spawn_timer:Timer = new Timer(10000);
+			spawn_timer.addEventListener( TimerEvent.TIMER, randomly_spawn_enemies);
+			spawn_timer.start();
 		}
 		
 		public function loop( e:TimerEvent ) {

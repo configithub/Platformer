@@ -14,16 +14,16 @@
 
 		public function loop() {
 			for each (var node:MotionControlNode in nodes) {
-				if (node.cruise == null) {// not a cruising entity, for now it means that it answer to keyboard inputs
+				if (node.flag.value == game.PLAYER) {// not a cruising entity, for now it means that it answer to keyboard inputs
                     keyboard_control(node);
-				}else{
+				}else if(node.cruise != null){
 					cruise_control(node);
 				}
 			}
 			for each (var node:MotionControlNode in nodes2) {
-				if (node.cruise == null) {// not a cruising entity, for now it means that it answer to keyboard inputs
+				if (node.flag.value == game.PLAYER) {// not a cruising entity, for now it means that it answer to keyboard inputs
                     keyboard_control(node);
-				}else{
+				}else if(node.cruise != null){
 					cruise_control(node);
 				}
 			}
