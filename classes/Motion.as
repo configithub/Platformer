@@ -20,6 +20,8 @@
 		
 		var stand_on:CollisionNode;
 		
+		var is_facing_left:Boolean;
+		
 		public function Motion(aGame:PlatformerGame, aSpeedX:int, aSpeedY:int, aAccelX:int, aAccelY:int, aGravity:Boolean, aFriction:Boolean, aMaxSpeed:int) {
 			accel_x = aAccelX;
 			accel_y = aAccelY;
@@ -31,6 +33,7 @@
 			max_speed = aMaxSpeed;
 			can_jump = false;
 			can_fire = true;
+			is_facing_left = true;
 			motion_priority = 2;
 		}
 		

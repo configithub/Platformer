@@ -6,27 +6,43 @@
 		var nodes:Array; // things that needs to be moved first (i.e. moving platforms)
 		var nodes2:Array; // things that will be moved later on
 
+		// the player is a special entity, especially for entities that are under ai control, 
+		// so we might need it across the whole motion control system
+		// to avoid picking it again and again we store it in this variable
+		var player_node:MotionControlNode; 
+
 		public function MotionControlSystem(aGame:PlatformerGame) {
 			game = aGame;
 			nodes = new Array();
 			nodes2 = new Array();
 		}
+		
+		public function find_player_node() { 
+			for each(var node:MotionControlNode in nodes2) { // player should always be in nodes2
+				if(node.flag.value == game.PLAYER) {
+					player_node = node;
+				}
+			}
+		}
+
+		public function loop_node_array(node_array:Array) {
+			for each (var node:MotionControlNode in node_array) {
+				if (node.flag.value == game.PLAYER) {// not a cruising entity, for now it means that it answer to keyboard inputs
+                    keyboard_control(node);
+				}else if(node.ai != null) {
+					ai_control(node);
+				}else if(node.cruise != null){
+					cruise_control(node);
+				}
+			}
+		}
 
 		public function loop() {
-			for each (var node:MotionControlNode in nodes) {
-				if (node.flag.value == game.PLAYER) {// not a cruising entity, for now it means that it answer to keyboard inputs
-                    keyboard_control(node);
-				}else if(node.cruise != null){
-					cruise_control(node);
-				}
-			}
-			for each (var node:MotionControlNode in nodes2) {
-				if (node.flag.value == game.PLAYER) {// not a cruising entity, for now it means that it answer to keyboard inputs
-                    keyboard_control(node);
-				}else if(node.cruise != null){
-					cruise_control(node);
-				}
-			}
+			// find player 
+			find_player_node();
+			// loop both node array, order matters
+			loop_node_array(nodes);
+			loop_node_array(nodes2);
 		}
 
 		public function keyboard_control(node:MotionControlNode) {
@@ -41,7 +57,7 @@
 				node.motion.accel_y = -10;
 			}
 			if (game.space_released && node.motion.can_fire) { 
-			  game.player_fires();
+			  game.entity_fires(node.position.entity);
 			}
 		}
 		
@@ -60,17 +76,67 @@
 				node.motion.speed_y = node.cruise.speed_y * (next_position.y - node.position.y) / module;
 			}
 		}
+		
+		public function ai_control(node:MotionControlNode) { 
+			if(node.ai.modes[game.DO_ON_SIGHT] != null && player_on_sight(node)) {
+				do_action(node, node.ai.modes[game.DO_ON_SIGHT]);
+			}else if(node.ai.modes[game.DO_WHEN_BELOW] != null && entity_is_below(node)) {
+				do_action(node, node.ai.modes[game.DO_WHEN_BELOW]);
+			}else if(node.ai.modes[game.DO_WHEN_HIGHER] != null && entity_is_higher(node)) {
+				do_action(node, node.ai.modes[game.DO_WHEN_HIGHER]);
+			}
+		}
+		
+		public function player_on_sight(node:MotionControlNode) {
+			var error_margin:int = 30;
+			if(player_node.position.y < node.position.y + error_margin
+			   && player_node.position.y > node.position.y - error_margin) {
+				return true;   
+			}
+			return false;
+		}
+		
+		public function entity_is_below(node:MotionControlNode) { 
+			var error_margin:int = 80;
+			if(player_node.position.y < node.position.y - error_margin) {
+				return true;
+			}
+			return false;
+		}
+		
+		public function entity_is_higher(node:MotionControlNode) { 
+			var error_margin:int = 80;
+			if(player_node.position.y > node.position.y + error_margin) {
+				return true;
+			}
+			return false;
+		}
+		
+		public function do_action(node:MotionControlNode, action_id:int) {
+			var error_margin_x:int = 40;
+			
+			if(action_id == game.FIRE) {
+				node.motion.is_facing_left = player_node.position.x < node.position.x;
+				game.entity_fires(node.position.entity);
+			}else if(action_id == game.FOLLOW) { 
+				if(player_node.position.x > node.position.x + error_margin_x) {
+					node.motion.accel_x = 5;
+				}else if (player_node.position.x < node.position.x - error_margin_x){
+					node.motion.accel_x = -5;
+				}
+			}else if(action_id == game.FIND_LEDGE) { 
+			
+			}
+		}
 
 		public function add(entity:Entity) {
-			var new_node:MotionControlNode = new MotionControlNode(entity.components["P"],entity.components["M"],entity.components["C"],entity.components["F"]);
+			var new_node:MotionControlNode = new MotionControlNode(entity.components["P"], entity.components["M"],
+								entity.components["C"], entity.components["I"], entity.components["F"]);
 			if(new_node.motion.motion_priority == 1) {
 				nodes.push(new_node);
 			}else{
 				nodes2.push(new_node);
 			}
 		}
-
-
 	}
-
 }

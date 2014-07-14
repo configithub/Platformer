@@ -28,13 +28,13 @@
 			if(node.animation.animation_states[game.LEFT] != null) {
 				if( node.motion.speed_x < 0 && is_standing(node) ) {
 					node.animation.current_state = game.LEFT;
-					node.animation.is_facing_left = true;
+					node.motion.is_facing_left = true;
 				}
 			}
 			if(node.animation.animation_states[game.RIGHT] != null) {
 				if( node.motion.speed_x > 0 && is_standing(node) ) {
 					node.animation.current_state = game.RIGHT;
-					node.animation.is_facing_left = false;
+					node.motion.is_facing_left = false;
 				}
 			}
 			if(node.animation.animation_states[game.IDLE] != null) {

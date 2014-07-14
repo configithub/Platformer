@@ -36,6 +36,29 @@
 		const ROTATION:int = 1;
 		const ONE_WAY_TRIP = 2;
 		
+		// ai modes (used in motion control system)
+		// conditions
+		const DO_ON_SIGHT = 0;
+		const DO_WHEN_BELOW = 1;
+		const DO_WHEN_HIGHER = 2;
+		// actions
+		const FIRE = 0;
+		const FOLLOW = 1;
+		const FIND_LEDGE = 2;
+		// passive behavior
+		const STAY_ON_LEDGE = 0;
+		
+		/*
+		*  if enemy is at the same level as player : either fire at him or follow him horizontally
+		*  if enemy is higher than player : follow him horizontally
+		*  if enemy is below player : try to find a ledge and when a ledge (one way or moving platform) is juste above enemy, jump
+		*  if enemy is at the same level as the player vertically, then stay on ledge (passive behavior), else fall is authorized
+		*/
+		
+		// enemy quntity control
+		const MAX_ENEMY:int = 1;
+		var nb_enemy:int;
+		
 		var map_width:int;
 		var map_height:int;
 		var map:Array;
@@ -74,6 +97,7 @@
 		  init_input_collection();
 		  init_player();
 		  create_moving_platform(350, 50, 500, 300);
+		  nb_enemy = 0;
 		}
 		
 		public function init_input_collection() { 
@@ -141,8 +165,10 @@
 		
 		public function randomly_spawn_enemies(e:TimerEvent) {
 			var x:int = (Math.random() * 480) ;
-			trace("spawn x " + x);
-			create_enemy(x);
+			if( nb_enemy < MAX_ENEMY) {
+			  create_enemy(x);
+			  nb_enemy += 1;
+			}
 		}
 		
 		public function create_enemy(x:int) {
@@ -157,6 +183,11 @@
 			enemy_animation.add_animation_state( RIGHT, "right_enemy_animation" );
 			enemy.add_animation(enemy_animation);
 			enemy.add_flag(new Flag(this, ENEMY, SPECULATIVE_CONTACT));
+			var ai:AI = new AI(this);
+			ai.add_mode(DO_ON_SIGHT, FIRE);
+			ai.add_mode(DO_WHEN_HIGHER, FOLLOW);
+			ai.add_mode(DO_WHEN_BELOW, FOLLOW);
+			enemy.add_ai(ai);
 			render_system.add(enemy); // entity will be rendered
 			move_system.add(enemy); // entity can move
 			collision_system.add(enemy); // entity can collide
@@ -209,12 +240,12 @@
 			return tile;
 		}
 		
-		public function player_fires() {
+		public function entity_fires(entity:Entity) {
 			var bullet:Entity = new Entity(this);
 			var bullet_exit_offset_x:int;
 			var bullet_exit_offset_y:int;
 			var bullet_speed:int;
-			if(player.components["N"].is_facing_left == true) {
+			if(entity.components["M"].is_facing_left == true) {
 				bullet_exit_offset_x = -25;
 				bullet_speed = -30;
 			}else{
@@ -222,7 +253,7 @@
 				bullet_speed = 30;
 			}
 			bullet_exit_offset_y = -10;
-			bullet.add_position( new Position(this, player.components["P"].x + bullet_exit_offset_x, player.components["P"].y + bullet_exit_offset_y));
+			bullet.add_position( new Position(this, entity.components["P"].x + bullet_exit_offset_x, entity.components["P"].y + bullet_exit_offset_y));
 			bullet.add_displayable(new Displayable(this, new Bullet()));
 			bullet.add_motion(new Motion(this, bullet_speed, 0, 0, 0, false, false, Math.abs(bullet_speed)));
 			bullet.add_flag(new Flag(this, BULLET, NO_COLLISION));

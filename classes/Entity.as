@@ -15,6 +15,7 @@
 		*   F : Flag
 		*   W : Weapon
 		*   C : Cruise
+		*   I : AI
 		*/
 		var game:PlatformerGame;
 		
@@ -63,6 +64,10 @@
 			components["C"] = component;
 		}
 		
+		public function add_ai(component:AI) {
+			component.set_parent(this);
+			components["I"] = component;
+		}
 		
 	}
 }
