@@ -113,20 +113,83 @@
 		}
 		
 		public function do_action(node:MotionControlNode, action_id:int) {
-			var error_margin_x:int = 40;
-			
 			if(action_id == game.FIRE) {
 				node.motion.is_facing_left = player_node.position.x < node.position.x;
 				game.entity_fires(node.position.entity);
 			}else if(action_id == game.FOLLOW) { 
-				if(player_node.position.x > node.position.x + error_margin_x) {
-					node.motion.accel_x = 5;
-				}else if (player_node.position.x < node.position.x - error_margin_x){
+				follow(node);
+			}else if(action_id == game.FIND_LEDGE) {
+				find_ledge_and_climb(node);
+			}
+		}
+		
+		public function follow(node:MotionControlNode) { 
+		    if(node.motion.hori_map_collision_last_frame == game.RIGHT_COLLISION ||
+			   node.motion.hori_map_collision_last_frame == game.LEFT_COLLISION) {
+				   jump(node);
+			 }
+			var error_margin_x:int = 40;
+			if(player_node.position.x > node.position.x + error_margin_x) {
+				node.motion.accel_x = 5;
+			}else if (player_node.position.x < node.position.x - error_margin_x){
+				node.motion.accel_x = -5;
+			}
+		}
+		
+		public function find_ledge_and_climb(node:MotionControlNode) {
+			if(!find_oneway_tile(node)) { 
+				if(node.position.x  > 620) {
 					node.motion.accel_x = -5;
 				}
-			}else if(action_id == game.FIND_LEDGE) { 
+				if(node.position.x < 60) { 
+					node.motion.accel_x = 5;
+				}
 			
+				if(node.motion.is_facing_left) {
+					node.motion.accel_x = -5;
+				}else{
+					node.motion.accel_x = 5;
+				}
+				if(node.motion.can_jump) { 
+					var rand_task:Number = Math.random();
+					if(node.motion.hori_map_collision_last_frame == game.RIGHT_COLLISION) {
+						if(rand_task > 0.5) { node.motion.accel_x = -5;
+						}else{ jump(node); node.motion.accel_x = 5; }
+					}else if(node.motion.hori_map_collision_last_frame == game.LEFT_COLLISION) { 
+						if(rand_task > 0.5) { node.motion.accel_x = 5;
+						}else{ jump(node); node.motion.accel_x = -5; }
+					}
+				}
+			}else {
+				node.motion.accel_x = 0;
+				node.motion.speed_x = 0;
+				jump(node);
 			}
+		}
+		
+		public function jump(node:MotionControlNode) { 
+			if(node.motion.can_jump) {
+				node.motion.can_jump = false; node.motion.accel_y = -10;
+			}
+		}
+		
+		public function find_oneway_tile(node:MotionControlNode):Boolean {
+			var x:int = node.position.x;
+			var y:int = node.position.y;
+			var width:int = 40;
+			var height:int = 200;
+			var tile_top_left_X:int = game.get_tile_x( x - width / 2);
+			var tile_top_left_Y:int = game.get_tile_y( y - height / 2);
+			
+			var tile_bottom_right_X:int = game.get_tile_x(x + width);
+			var tile_bottom_right_Y:int = game.get_tile_y(y + height);
+			
+			for(var i:int = tile_top_left_X; i <= tile_bottom_right_X; i++) {
+				for(var j:int = tile_top_left_Y; j <= tile_bottom_right_Y; j++) {
+					if(game.map[ i + j * game.map_width ] == game.ONEWAY) { return true; }
+				}
+			}
+			return false;
 		}
 
 		public function add(entity:Entity) {

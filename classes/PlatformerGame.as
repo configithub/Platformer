@@ -48,6 +48,11 @@
 		// passive behavior
 		const STAY_ON_LEDGE = 0;
 		
+		// horizontal collision
+		const NO_COLLISION_LF = 0;
+		const LEFT_COLLISION = 1;
+		const RIGHT_COLLISION = 2;
+		
 		/*
 		*  if enemy is at the same level as player : either fire at him or follow him horizontally
 		*  if enemy is higher than player : follow him horizontally
@@ -184,9 +189,10 @@
 			enemy.add_animation(enemy_animation);
 			enemy.add_flag(new Flag(this, ENEMY, SPECULATIVE_CONTACT));
 			var ai:AI = new AI(this);
-			ai.add_mode(DO_ON_SIGHT, FIRE);
+			//ai.add_mode(DO_ON_SIGHT, FIRE);
+			ai.add_mode(DO_ON_SIGHT, FOLLOW);
 			ai.add_mode(DO_WHEN_HIGHER, FOLLOW);
-			ai.add_mode(DO_WHEN_BELOW, FOLLOW);
+			ai.add_mode(DO_WHEN_BELOW, FIND_LEDGE);
 			enemy.add_ai(ai);
 			render_system.add(enemy); // entity will be rendered
 			move_system.add(enemy); // entity can move

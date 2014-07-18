@@ -37,6 +37,9 @@
 		public function speculative_contact(node:CollisionNode) {
 			standing_on(node); // adjust player entity position if it stands on something else
 			
+			// check for horizontal collision, for now none of it 
+			node.motion.hori_map_collision_last_frame = game.NO_COLLISION_LF; // no horizontal collision with the map for now
+			
 			// check all position between current position and destination position step by step
 			// if one of the position is not valid, stop there and realize the motion to this position
 			// else go to the destination position
@@ -63,6 +66,8 @@
 				if(!valid_map_position(speculative_x, speculative_y, node)) {
 					node.motion.speed_x = 0;
 					speculative_x -= step_x;
+					if(step_x > 0) { node.motion.hori_map_collision_last_frame = game.RIGHT_COLLISION; }
+					else { node.motion.hori_map_collision_last_frame = game.LEFT_COLLISION; }
 					step_x = 0;
 				}else{
 					dist_x -= step_x;

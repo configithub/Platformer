@@ -16,6 +16,8 @@
 		var can_jump:Boolean;
 		var can_fire:Boolean;
 		
+		var hori_map_collision_last_frame:int;
+		
 		var motion_priority:int;
 		
 		var stand_on:CollisionNode;
@@ -35,6 +37,7 @@
 			can_fire = true;
 			is_facing_left = true;
 			motion_priority = 2;
+			hori_map_collision_last_frame = 0;
 		}
 		
 	}
