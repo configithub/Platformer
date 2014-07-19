@@ -189,8 +189,7 @@
 			enemy.add_animation(enemy_animation);
 			enemy.add_flag(new Flag(this, ENEMY, SPECULATIVE_CONTACT));
 			var ai:AI = new AI(this);
-			//ai.add_mode(DO_ON_SIGHT, FIRE);
-			ai.add_mode(DO_ON_SIGHT, FOLLOW);
+			ai.add_mode(DO_ON_SIGHT, FIRE);
 			ai.add_mode(DO_WHEN_HIGHER, FOLLOW);
 			ai.add_mode(DO_WHEN_BELOW, FIND_LEDGE);
 			enemy.add_ai(ai);
@@ -247,6 +246,7 @@
 		}
 		
 		public function entity_fires(entity:Entity) {
+			if(!entity.components["M"].can_fire) { return; }
 			var bullet:Entity = new Entity(this);
 			var bullet_exit_offset_x:int;
 			var bullet_exit_offset_y:int;
@@ -263,9 +263,13 @@
 			bullet.add_displayable(new Displayable(this, new Bullet()));
 			bullet.add_motion(new Motion(this, bullet_speed, 0, 0, 0, false, false, Math.abs(bullet_speed)));
 			bullet.add_flag(new Flag(this, BULLET, NO_COLLISION));
+			entity.components["M"].fire_cooldown.start();
+			entity.components["M"].can_fire = false;
 			render_system.add(bullet);
 			move_system.add(bullet); 
 		}
+		
+		
 		
 		public function init_map() {
 	      tile_width = 32;
@@ -290,12 +294,14 @@
 			
 		}
 		
+		
+		
 		public function start() {
 			game_timer = new Timer(25);
 			game_timer.addEventListener( TimerEvent.TIMER, loop );
 			game_timer.start();
 			
-			var spawn_timer:Timer = new Timer(10000);
+			var spawn_timer:Timer = new Timer(3000);
 			spawn_timer.addEventListener( TimerEvent.TIMER, randomly_spawn_enemies);
 			spawn_timer.start();
 		}

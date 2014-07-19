@@ -176,10 +176,10 @@
 		public function find_oneway_tile(node:MotionControlNode):Boolean {
 			var x:int = node.position.x;
 			var y:int = node.position.y;
-			var width:int = 40;
+			var width:int = 20;
 			var height:int = 200;
-			var tile_top_left_X:int = game.get_tile_x( x - width / 2);
-			var tile_top_left_Y:int = game.get_tile_y( y - height / 2);
+			var tile_top_left_X:int = game.get_tile_x( x - width);
+			var tile_top_left_Y:int = game.get_tile_y( y - height);
 			
 			var tile_bottom_right_X:int = game.get_tile_x(x + width);
 			var tile_bottom_right_Y:int = game.get_tile_y(y + height);
