@@ -2,11 +2,14 @@
 	
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
+    import flash.text.engine.RenderingMode;
 	
 	public class RenderSystem {
 		
 		var game:PlatformerGame;
 		var nodes:Array;
+		
+		var player_node:RenderNode;
 		
 		var container:DisplayObjectContainer;
 		
@@ -14,6 +17,10 @@
 			game = aGame;
 			container = game;
 			nodes = new Array();
+		}
+		
+		public function find_player_position():Position { 
+			return game.player.components["P"];
 		}
 		
 		public function is_standing(node:RenderNode) { // check if entity is standing on something (map or other entity)
@@ -55,7 +62,7 @@
 				  }
 				} 
 				// render entity
-				node.display.display_object.x = node.position.x;
+				node.display.display_object.x = node.position.x - find_player_position().x + 320;
 				node.display.display_object.y = node.position.y;
 			}
 		}

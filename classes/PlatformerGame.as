@@ -64,9 +64,14 @@
 		const MAX_ENEMY:int = 1;
 		var nb_enemy:int;
 		
+		var area_width:int;
+		var area_height:int;
+		var area:Array;
+		
 		var map_width:int;
 		var map_height:int;
 		var map:Array;
+		var map2:Array;
 		
 		var tile_width:int;
 		var tile_height:int;
@@ -97,8 +102,8 @@
 		
 		public function init() { 
 		  init_systems();
-		  init_map();
-		  draw_map();
+		  init_area();
+		  draw_area();
 		  init_input_collection();
 		  init_player();
 		  create_moving_platform(350, 50, 500, 300);
@@ -218,13 +223,15 @@
 			collision_system.add(platform);
 			motion_control_system.add(platform);
 		}
-
-		public function get_tile_x(x:int):int {
-			return x / tile_width;
-		}
 		
-		public function get_tile_y(y:int):int {
-			return y / tile_height;
+		public function get_tile(x:int, y:int):int {
+			var map_id:int = x / (map_width * tile_width); // + area_width * (y / (map_height * tile_height));
+			x = (x % (map_width * tile_width)) / tile_width;
+			y = (y % (map_height * tile_height)) / tile_height;
+			if(map_id < 0 || map_id >= area.length) { return 0; }
+			var amap:Array = area[map_id];
+			if(x+y*map_width > amap.length || x+y*map_width < 0) { return 0; }
+			return amap[ x + y * map_width];
 		}
 		
 		public function create_tile( x:int, y:int ):Entity {
@@ -269,9 +276,14 @@
 			move_system.add(bullet); 
 		}
 		
+		public function init_area() { 
+			init_maps();
+			area_width = 2;
+			area_height = 1;
+			area = new Array(map, map2);
+		}
 		
-		
-		public function init_map() {
+		public function init_maps() {
 	      tile_width = 32;
 		  tile_height = 32;
 		  map_width = 20;
@@ -292,10 +304,25 @@
 						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 						   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 			
+		  map2 = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			    		   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 3, 3, 3, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+						   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+			
 		}
 		
-		
-		
+			
 		public function start() {
 			game_timer = new Timer(25);
 			game_timer.addEventListener( TimerEvent.TIMER, loop );
@@ -314,14 +341,28 @@
 			reset_inputs();
 		}
 		
-		public function draw_map() {
+		public function draw_area() {
+			var x:int = 0; var y:int = 0;
+			for each (var map in area) {
+				trace("draw map " + x + " " + y);
+				draw_map(map, x, y);
+				x += 1;
+				if(x >= area_width) {
+					y+=1;
+				}
+				x = x % area_width;
+				y = y % area_height;
+			}
+		}
+		
+		public function draw_map(map:Array, map_x:int, map_y:int) {
 			var x:int = 0;
 			var y:int = 0;
 			for each (var i in map) {
 				if( i == TILE ) {
-					create_tile( x * tile_width + tile_width / 2,  y * tile_height + tile_height / 2 );
+					create_tile( (map_x * map_width + x) * tile_width + tile_width / 2, (map_y * map_height + y) * tile_height + tile_height / 2 );
 				}else if( i == ONEWAY ) {
-					create_oneway_tile( x * tile_width + tile_width / 2,  y * tile_height + tile_height / 2 );
+					create_oneway_tile( (map_x * map_width + x) * tile_width + tile_width / 2, (map_y * map_height + y) * tile_height + tile_height / 2 );
 				}
 				x += 1;
 				if( x >= map_width) { 

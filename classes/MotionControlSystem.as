@@ -178,15 +178,15 @@
 			var y:int = node.position.y;
 			var width:int = 20;
 			var height:int = 200;
-			var tile_top_left_X:int = game.get_tile_x( x - width);
-			var tile_top_left_Y:int = game.get_tile_y( y - height);
+			var tile_top_left_X:int = ( x - width) / game.tile_width;
+			var tile_top_left_Y:int = ( y - height) / game.tile_height;
 			
-			var tile_bottom_right_X:int = game.get_tile_x(x + width);
-			var tile_bottom_right_Y:int = game.get_tile_y(y + height);
+			var tile_bottom_right_X:int = (x + width) / game.tile_width;
+			var tile_bottom_right_Y:int = (y + height) / game.tile_height;
 			
 			for(var i:int = tile_top_left_X; i <= tile_bottom_right_X; i++) {
 				for(var j:int = tile_top_left_Y; j <= tile_bottom_right_Y; j++) {
-					if(game.map[ i + j * game.map_width ] == game.ONEWAY) { return true; }
+					if(game.get_tile(i * game.tile_width, j * game.tile_height) == game.ONEWAY) { return true; }
 				}
 			}
 			return false;

@@ -91,16 +91,16 @@
 		
 		// check if entity collides with the map
 		public function valid_map_position(x:int, y:int, node:CollisionNode):Boolean {
-			var tile_top_left_X:int = game.get_tile_x( x - node.aabb.width / 2);
-			var tile_top_left_Y:int = game.get_tile_y( y - node.aabb.height / 2);
+			var tile_top_left_X:int = (x - node.aabb.width / 2) / game.tile_width;
+			var tile_top_left_Y:int = (y - node.aabb.height / 2) / game.tile_height;
 			
-			var tile_bottom_right_X:int = game.get_tile_x(x+node.aabb.width /2);
-			var tile_bottom_right_Y:int = game.get_tile_y(y+node.aabb.height /2);
+			var tile_bottom_right_X:int = (x + node.aabb.width / 2) / game.tile_width;
+			var tile_bottom_right_Y:int = (y + node.aabb.height / 2) / game.tile_height;
 			
 			for(var i:int = tile_top_left_X; i <= tile_bottom_right_X; i++) {
 				for(var j:int = tile_top_left_Y; j <= tile_bottom_right_Y; j++) {
-					if(game.map[ i + j * game.map_width ] == game.TILE ||
-					   (game.map[ i + j * game.map_width ] == game.ONEWAY 
+					if(game.get_tile(i*game.tile_width, j*game.tile_height) == game.TILE ||
+					   (game.get_tile(i*game.tile_width, j*game.tile_height) == game.ONEWAY 
 						&& node.position.y+node.aabb.height /2 < j * game.tile_height)) { return false; }
 				}
 			}
