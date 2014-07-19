@@ -2,14 +2,11 @@
 	
     import flash.display.DisplayObject;
     import flash.display.DisplayObjectContainer;
-    import flash.text.engine.RenderingMode;
-	
+    
 	public class RenderSystem {
 		
 		var game:PlatformerGame;
 		var nodes:Array;
-		
-		var player_node:RenderNode;
 		
 		var container:DisplayObjectContainer;
 		
@@ -19,7 +16,7 @@
 			nodes = new Array();
 		}
 		
-		public function find_player_position():Position { 
+		public function player_position():Position { 
 			return game.player.components["P"];
 		}
 		
@@ -62,7 +59,7 @@
 				  }
 				} 
 				// render entity
-				node.display.display_object.x = node.position.x - find_player_position().x + 320;
+				node.display.display_object.x = node.position.x - player_position().x + 320;
 				node.display.display_object.y = node.position.y;
 			}
 		}
