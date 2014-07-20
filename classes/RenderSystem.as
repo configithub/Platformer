@@ -59,7 +59,12 @@
 				  }
 				} 
 				// render entity
-				node.display.display_object.x = node.position.x - player_position().x + 320;
+				var camera_x:int = player_position().x - 320;
+				if(camera_x < 0) { camera_x = 0; }
+				if(camera_x > (game.area_width-1) * game.map_width * game.tile_width) { 
+					camera_x = (game.area_width-1) * game.map_width * game.tile_width;
+				}
+				node.display.display_object.x = node.position.x - camera_x;
 				node.display.display_object.y = node.position.y;
 			}
 		}
