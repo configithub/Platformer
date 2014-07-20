@@ -33,7 +33,18 @@
 					ai_control(node);
 				}else if(node.cruise != null){
 					cruise_control(node);
+				}else if(node.flag.value == game.CAMERA) { // this is the camera, specific treatment
+					loop_camera(node);
 				}
+			}
+		}
+		
+		public function loop_camera(camera:MotionControlNode) { 
+			// update camera coordinates
+			camera.position.x = player_node.position.x - 320;
+			if(camera.position.x < 0) { camera.position.x = 0; }
+			else if(camera.position.x > (game.area_width-1) * game.map_width * game.tile_width) { 
+				camera.position.x = (game.area_width-1) * game.map_width * game.tile_width;
 			}
 		}
 

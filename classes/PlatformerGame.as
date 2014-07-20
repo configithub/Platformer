@@ -30,6 +30,7 @@
 		const BULLET:int = 4;
 		const MOVING_PLATFORM:int = 99;
 		const ENEMY:int = 6;
+		const CAMERA:int = 7;
 		
 		// cuise modes (used in motion control system)
 		const OSCILLATION:int = 0;
@@ -78,6 +79,8 @@
 		
 		var player:Entity;
 		
+		var camera:Entity;
+		
 		// systems
 		var render_system:RenderSystem;
 		var move_system:MoveSystem;
@@ -106,6 +109,7 @@
 		  draw_area();
 		  init_input_collection();
 		  init_player();
+		  init_camera();
 		  create_moving_platform(350, 50, 500, 300);
 		  nb_enemy = 0;
 		}
@@ -171,6 +175,15 @@
 			move_system.add(player); // entity can move
 			collision_system.add(player); // entity can collide
 			motion_control_system.add(player); // entity can be controlled (via keyboard input in this case)
+		}
+		
+		public function init_camera() {
+			camera = new Entity(this);
+			camera.add_position(new Position(this, 100, 0));
+			camera.add_motion(new Motion(this, 0, 0, 0, 0, false, true, 20));
+			camera.add_flag(new Flag(this, CAMERA, NO_COLLISION));
+			move_system.add(camera);
+			motion_control_system.add(camera);
 		}
 		
 		public function randomly_spawn_enemies(e:TimerEvent) {

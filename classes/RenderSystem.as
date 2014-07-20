@@ -16,10 +16,6 @@
 			nodes = new Array();
 		}
 		
-		public function player_position():Position { 
-			return game.player.components["P"];
-		}
-		
 		public function is_standing(node:RenderNode) { // check if entity is standing on something (map or other entity)
 			if(node.motion.stand_on == null && node.motion.speed_y == 0
 			 || node.motion.stand_on != null) {
@@ -59,13 +55,8 @@
 				  }
 				} 
 				// render entity
-				var camera_x:int = player_position().x - 320;
-				if(camera_x < 0) { camera_x = 0; }
-				if(camera_x > (game.area_width-1) * game.map_width * game.tile_width) { 
-					camera_x = (game.area_width-1) * game.map_width * game.tile_width;
-				}
-				node.display.display_object.x = node.position.x - camera_x;
-				node.display.display_object.y = node.position.y;
+				node.display.display_object.x = node.position.x - game.camera.components["P"].x;
+				node.display.display_object.y = node.position.y - game.camera.components["P"].y;
 			}
 		}
 		
