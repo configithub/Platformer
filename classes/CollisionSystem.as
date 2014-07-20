@@ -120,7 +120,7 @@
 			// check if something collides and fill the collision queue
 			for(var i:int = 0; i < nodes.length-1; i++) {
 				for(var j:int = i+1; j < nodes.length; j++) {
-					if(nodes[i].flag.value == nodes[j].flag.value) { continue; } // dirty fix to prevent intertile collisions
+					if(nodes[i].flag.value == nodes[j].flag.value) { continue; } 
 					if(is_colliding(nodes[i], nodes[j])) {
 					  if(nodes[i].flag.value < nodes[j].flag.value) {
 					    collision_queue.push(new Collision(nodes[i], nodes[j]));   
@@ -143,13 +143,31 @@
 								- collision.a.motion.speed_y; // adjust player position to avoid interpenetration
 						collision.a.motion.stand_on = collision.b; // player now stands on platform
 					}
+				}else if(collision.a.flag.value == game.BULLET && collision.b.flag.value == game.ENEMY) {
+					if(collision.a.flag.allegiance != collision.b.flag.allegiance) { 
+						// kill enemy(b) and remove bullet(a)
+						collision.a.flag.remove_next_loop = true;
+						collision.b.flag.remove_next_loop = true;
+					}
 				}
+			}
+			
+			// cleanup dead nodes
+			for each(var dnode:CollisionNode in nodes) { 
+				remove_dead_node(dnode);
 			}
 		}
 		
 		public function add(entity:Entity) {
 			var new_node:CollisionNode = new CollisionNode(entity.components["P"], entity.components["A"], entity.components["M"], entity.components["F"]) ;
 			nodes.push(new_node);
+		}
+		
+		public function remove_dead_node(node:CollisionNode) { 
+			if(node.flag.remove_next_loop) {
+				node = nodes[nodes.length-1];
+				nodes.pop();
+			}
 		}
 		
 	}

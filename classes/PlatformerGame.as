@@ -21,6 +21,7 @@
 		const NO_COLLISION:int = 0;
 		const SPECULATIVE_CONTACT:int = 1;
 		const PLATFORM_COLLISION:int = 2;
+		const ENTITY_COLLISION:int = 3;
 		
 		// entity types (in flag component)
 		// 0 : void tile;
@@ -62,7 +63,7 @@
 		*/
 		
 		// enemy quntity control
-		const MAX_ENEMY:int = 1;
+		const MAX_ENEMY:int = 10;
 		var nb_enemy:int;
 		
 		var area_width:int;
@@ -171,6 +172,7 @@
 			player_animation.add_animation_state( RIGHT, "right_player_animation" );
 			player.add_animation(player_animation);
 			player.add_flag(new Flag(this, PLAYER, SPECULATIVE_CONTACT));
+			player.components["F"].allegiance = PLAYER;
 			render_system.add(player); // entity will be rendered
 			move_system.add(player); // entity can move
 			collision_system.add(player); // entity can collide
@@ -282,11 +284,14 @@
 			bullet.add_position( new Position(this, entity.components["P"].x + bullet_exit_offset_x, entity.components["P"].y + bullet_exit_offset_y));
 			bullet.add_displayable(new Displayable(this, new Bullet()));
 			bullet.add_motion(new Motion(this, bullet_speed, 0, 0, 0, false, false, Math.abs(bullet_speed)));
-			bullet.add_flag(new Flag(this, BULLET, NO_COLLISION));
+			bullet.add_flag(new Flag(this, BULLET, ENTITY_COLLISION));
+			bullet.components["F"].allegiance = entity.components["F"].allegiance;
+			bullet.add_aabb_mask(new AABBMask(this, 200, 10));
 			entity.components["M"].fire_cooldown.start();
 			entity.components["M"].can_fire = false;
 			render_system.add(bullet);
 			move_system.add(bullet); 
+			collision_system.add(bullet);
 		}
 		
 		public function init_area() { 

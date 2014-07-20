@@ -36,6 +36,7 @@
 				}else if(node.flag.value == game.CAMERA) { // this is the camera, specific treatment
 					loop_camera(node);
 				}
+				remove_dead_node(node);
 			}
 		}
 		
@@ -54,6 +55,7 @@
 			// loop both node array, order matters
 			loop_node_array(nodes);
 			loop_node_array(nodes2);
+			
 		}
 
 		public function keyboard_control(node:MotionControlNode) {
@@ -210,6 +212,14 @@
 				nodes.push(new_node);
 			}else{
 				nodes2.push(new_node);
+			}
+		}
+		
+		public function remove_dead_node(node:MotionControlNode) { 
+			if(node.flag.remove_next_loop) {
+				trace("removing a dead node from MotionControlSystem " + node.flag.value);
+				node = nodes2[nodes.length-1];
+				nodes2.pop();
 			}
 		}
 	}
