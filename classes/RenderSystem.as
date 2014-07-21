@@ -58,8 +58,9 @@
 				node.display.display_object.x = node.position.x - game.camera.components["P"].x;
 				node.display.display_object.y = node.position.y - game.camera.components["P"].y;
 				// clean dead nodes
-				remove_dead_node(node);
+				
 			}
+			remove_dead_nodes(nodes);
 		}
 		
 		public function add(entity:Entity) {
@@ -71,13 +72,17 @@
 			container.addChild(new_node.display.display_object);
 		}
 		
-		public function remove_dead_node(node:RenderNode) { 
-			if(node.flag.remove_next_loop) {
-				node = nodes[nodes.length-1];
-				container.removeChild(node.display.display_object);
-				node.display.display_object = null;
-				node.display = null;
+		
+		
+		public function remove_dead_nodes(nodes:Array) { 
+			for(var i:int = 0; i < nodes.length; i++) {
+			  if(nodes[i].flag.remove_next_loop) {
+				container.removeChild(nodes[i].display.display_object);
+				nodes[i].display.display_object = null;
+				nodes[i].display = null;
+				nodes[i] = nodes[nodes.length-1];
 				nodes.pop();
+			  }
 			}
 		}
 		

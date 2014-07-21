@@ -38,12 +38,22 @@
 				  node.position.y += node.motion.speed_y;
 				}
 			}
+			remove_dead_nodes(nodes);
 		}
 		
 		
 		public function add(entity:Entity) {
 			var new_node:MoveNode = new MoveNode(entity.components["P"], entity.components["M"], entity.components["F"]) ;
 			nodes.push(new_node);
+		}
+		
+		public function remove_dead_nodes(nodes:Array) { 
+			for(var i:int = 0; i < nodes.length; i++) {
+			  if(nodes[i].flag.remove_next_loop) {
+				nodes[i] = nodes[nodes.length-1];
+				nodes.pop();
+			  }
+			}
 		}
 		
 	}

@@ -146,16 +146,18 @@
 				}else if(collision.a.flag.value == game.BULLET && collision.b.flag.value == game.ENEMY) {
 					if(collision.a.flag.allegiance != collision.b.flag.allegiance) { 
 						// kill enemy(b) and remove bullet(a)
-						collision.a.flag.remove_next_loop = true;
-						collision.b.flag.remove_next_loop = true;
+						if(!collision.a.flag.remove_next_loop) {
+							collision.a.flag.remove_next_loop = true;
+						}
+						if(!collision.b.flag.remove_next_loop) {
+							collision.b.flag.remove_next_loop = true;
+						}
 					}
 				}
 			}
 			
 			// cleanup dead nodes
-			for each(var dnode:CollisionNode in nodes) { 
-				remove_dead_node(dnode);
-			}
+			remove_dead_nodes(nodes);
 		}
 		
 		public function add(entity:Entity) {
@@ -163,10 +165,13 @@
 			nodes.push(new_node);
 		}
 		
-		public function remove_dead_node(node:CollisionNode) { 
-			if(node.flag.remove_next_loop) {
-				node = nodes[nodes.length-1];
+		
+		public function remove_dead_nodes(nodes:Array) { 
+			for(var i:int = 0; i < nodes.length; i++) {
+			  if(nodes[i].flag.remove_next_loop) {
+				nodes[i] = nodes[nodes.length-1];
 				nodes.pop();
+			  }
 			}
 		}
 		
