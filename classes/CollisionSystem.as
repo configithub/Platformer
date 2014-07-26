@@ -13,6 +13,7 @@
 			nodes = new Array();
 		}
 		
+		
 		public function is_colliding( nodeA:CollisionNode, nodeB:CollisionNode):Boolean {
 			if( nodeA.position.x + nodeA.aabb.width / 2 < nodeB.position.x - nodeB.aabb.width / 2
 			   || nodeB.position.x + nodeB.aabb.width / 2 < nodeA.position.x - nodeA.aabb.width / 2
@@ -168,6 +169,8 @@
 		
 		public function remove_dead_nodes(nodes:Array) { 
 			for(var i:int = 0; i < nodes.length; i++) {
+			  if(nodes[i].position.x > game.area_width * game.map_width * game.tile_width ||
+				 nodes[i].position.x < -40) { nodes[i].flag.remove_next_loop = true; }  // remove out of boundary entities
 			  if(nodes[i].flag.remove_next_loop) {
 				nodes[i] = nodes[nodes.length-1];
 				nodes.pop();

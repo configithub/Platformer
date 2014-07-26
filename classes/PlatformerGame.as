@@ -97,6 +97,9 @@
 		
 		var game_timer:Timer;
 		
+		// keep a reference of each entity, used to remove them
+		var entity_array:Array;
+		
 		public function PlatformerGame() {
 			// init all systems + map + entity sprites + input collection
 			init();
@@ -113,6 +116,23 @@
 		  init_camera();
 		  create_moving_platform(350, 50, 500, 300);
 		  nb_enemy = 0;
+		}
+		
+		public function clean_dead_entities() { 
+			for(var i:int = 0; i < entity_array.length; i++) {
+				if(entity_array[i].components['F'] != null) {
+					if(entity_array[i].components['F'].remove_next_loop) {
+						entity_array[i].components['F'].remaining_frames -= 1;
+						if(entity_array[i].components['F'].remaining_frames < 0) {
+							trace("cleaning entity: " + entity_array[i].components['F'].value);
+							entity_array[i].components.length = 0;
+							entity_array[i].components = null;
+							entity_array[i] = entity_array[entity_array.length -1];
+							entity_array.pop();
+						}
+					}
+				}
+			}
 		}
 		
 		public function init_input_collection() { 
@@ -154,6 +174,7 @@
 		}
 		
 		public function init_systems() { 
+			entity_array = new Array();
 			render_system = new RenderSystem(this);
 			move_system = new MoveSystem(this);
 			collision_system = new CollisionSystem(this);
@@ -357,7 +378,10 @@
 			collision_system.loop();
 			render_system.loop();
 			reset_inputs();
+			clean_dead_entities();
 		}
+		
+		
 		
 		public function draw_area() {
 			var x:int = 0; var y:int = 0;

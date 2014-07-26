@@ -22,6 +22,7 @@
 		public function Entity(aGame:PlatformerGame) {
 			game = aGame;
 			components = new Object();
+			game.entity_array.push(this);
 		}
 		
 		public function add_displayable(component:Displayable) {
